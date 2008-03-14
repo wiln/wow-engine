@@ -107,9 +107,9 @@ _wplane1.activCollisionEvent(func)
 
 		public function generate():void {
 			var p:WVertex;
-			var wd=_w/2;
-			var hd=_h/2;
-			var dd=_d/2;
+			var wd:Number=_w/2;
+			var hd:Number=_h/2;
+			var dd:Number=_d/2;
 			p = new WVertex(-wd,-hd,-dd);
 			aPoints.push(p);
 			p = new WVertex(wd,-hd,-dd);
@@ -134,7 +134,7 @@ _wplane1.activCollisionEvent(func)
 			_wplane5=new WOWPlane();
 
 		}
-		public function setRotation(rx:Number,ry:Number,rz:Number) {
+		public function setRotation(rx:Number,ry:Number,rz:Number):void {
 			rx = ( rx + 360 ) % 360;
 			ry = ( ry + 360 ) % 360;
 			rz = ( rz + 360 ) % 360;
@@ -144,12 +144,12 @@ _wplane1.activCollisionEvent(func)
 			_mRot=WMatrix4Math.eulerRotation( rx,ry, rz );
 			updateVertexPos();
 		}
-		public function setPosition(tx:Number,ty:Number,tz:Number) {
+		public function setPosition(tx:Number,ty:Number,tz:Number):void {
 			position=new WVector(tx,ty,tz);
 			_mPos = WMatrix4Math.translation( tx, ty, tz );
 			updateVertexPos();
 		}
-		private function updateVertexPos() {
+		private function updateVertexPos():void {
 
 			var m11:Number,m21:Number,m31:Number,m41:Number,m12:Number,m22:Number,m32:Number,m42:Number,m13:Number,m23:Number,m33:Number,m43:Number,m14:Number,m24:Number,m34:Number,m44:Number;
 
