@@ -100,7 +100,7 @@ package fr.seraf.wow.primitive{
 			//_n = _f.createNormale ();
 			//_plane=new Plane(_n.x,_n.y,_n.z,0);
 		}
-		public function setRotation(rx:Number,ry:Number,rz:Number) {
+		public function setRotation(rx:Number,ry:Number,rz:Number):void {
 			rx = ( rx + 360 ) % 360;
 			ry = ( ry + 360 ) % 360;
 			rz = ( rz + 360 ) % 360;
@@ -110,17 +110,12 @@ package fr.seraf.wow.primitive{
 			_mRot=WMatrix4Math.eulerRotation( rx,ry, rz );
 			updateVertexPos();
 		}
-		
-		public function getRotation():WVector
-		{
-		    return rotation;
-		}
-		public function setPosition(tx:Number,ty:Number,tz:Number) {
+		public function setPosition(tx:Number,ty:Number,tz:Number):void {
 			position=new WVector(tx,ty,tz);
 			_mPos = WMatrix4Math.translation ( tx, ty, tz );
 			updateVertexPos();
 		}
-		private function updateVertexPos() {
+		private function updateVertexPos():void {
 
 			var m11:Number,m21:Number,m31:Number,m41:Number,m12:Number,m22:Number,m32:Number,m42:Number,m13:Number,m23:Number,m33:Number,m43:Number,m14:Number,m24:Number,m34:Number,m44:Number;
 
@@ -163,7 +158,7 @@ package fr.seraf.wow.primitive{
 		* @paramvoid
 		* @returnVector the 3D position of the object
 		*/
-		public function setPlane(p:WPlane) {
+		public function setPlane(p:WPlane):void {
 			_plane=p;
 		}
 
