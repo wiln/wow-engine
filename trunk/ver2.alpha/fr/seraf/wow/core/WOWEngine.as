@@ -23,20 +23,18 @@
 */
 package fr.seraf.wow.core {
 
-	import fr.seraf.wow.primitive.WBoundArea;
-	import fr.seraf.wow.primitive.WParticle;
-	import fr.seraf.wow.constraint.WConstraint;
-	import fr.seraf.wow.core.data.WVector;
-	import fr.seraf.wow.core.collision.WCollisionDetector;
-	import fr.seraf.wow.math.WVectorMath;
-	//////////////////
-	import de.polygonal.ds.DListNode;
-	import de.polygonal.ds.DLinkedList;
-	import de.polygonal.ds.DListIterator;
-	
 	import flash.utils.getQualifiedClassName;
 	
-	import flash.utils.getTimer;
+	import fr.seraf.wow.constraint.WConstraint;
+	import fr.seraf.wow.core.collision.WCollisionDetector;
+	import fr.seraf.wow.core.data.WVector;
+	import fr.seraf.wow.math.WVectorMath;
+	import fr.seraf.wow.primitive.WBoundArea;
+	import fr.seraf.wow.primitive.WParticle;
+	import fr.seraf.wow.structure.ConstraintList;
+	import fr.seraf.wow.structure.ConstraintNode;
+	import fr.seraf.wow.structure.ParticleList;
+	import fr.seraf.wow.structure.ParticleNode;
 	
 	/**
 	 * The main engine class. All particles and constraints should be added and removed
@@ -55,8 +53,8 @@ package fr.seraf.wow.core {
 		public var masslessForce:WVector;
 			
 		private var timeStep:Number;
-		private var particles:DLinkedList;
-		private var constraints:DLinkedList;
+		private var particles:ParticleList;
+		private var constraints:ConstraintList;
 		
 		private var _damping:Number;
 		private var _collisionResponseMode:Number = STANDARD;
@@ -76,8 +74,9 @@ package fr.seraf.wow.core {
 		public function WOWEngine(dt:Number=0.3):void {
 		
 			timeStep = dt * dt;
-			particles = new DLinkedList();
-			constraints =new DLinkedList();
+			
+			particles = new ParticleList();
+			constraints = new ConstraintList();
 			
 			force = new WVector(0,0,0);
 			masslessForce = new WVector(0,0,0);
@@ -188,9 +187,9 @@ package fr.seraf.wow.core {
 		 * 
 		 * @param p The particle to be added.
 		 */
-		public function addParticle(p:WParticle):DListNode {
+		public function addParticle(p:WParticle):ParticleNode {
 			p.engine = this;
-			return particles.append(p);
+			return particles.add(p);
 		}
 		
 		
@@ -199,23 +198,24 @@ package fr.seraf.wow.core {
 		 * 
 		 * @param p The particle to be removed.
 		 */
-		public function removeParticle(p:DListNode):Boolean {
-			var itr:DListIterator = new DListIterator(particles, p);
-			return particles.remove(itr);
-			/*var ppos:int = particles.indexOf(p);
-			if (ppos == -1) return;
-			particles.splice(ppos, 1);*/
+		public function removeParticleNode(p:ParticleNode):Boolean 
+		{
+			return particles.removeNode(p);
 		}
 		
+		public function removeParticle(p:WParticle):Boolean 
+		{
+			return particles.removeValue(p);
+		}
 		
 		/**
 		 * Adds a constraint to the engine.
 		 * 
 		 * @param c The constraint to be added.
 		 */
-		public function addConstraint(c:WConstraint):DListNode {
-			//constraints.push(c);
-			return constraints.append(c);
+		public function addConstraint(c:WConstraint):ConstraintNode 
+		{
+			return constraints.add(c);
 		}
 		/**
 		 * defini une zone de contrainte centré pour toutes les particules du moteur
@@ -238,14 +238,15 @@ package fr.seraf.wow.core {
 		 * 
 		 * @param c The constraint to be removed.
 		 */
-		public function removeConstraint(c:DListNode):Boolean {
-			var itr:DListIterator = new DListIterator(constraints, c);
-			return constraints.remove(itr);
-			/*var cpos:int = constraints.indexOf(c);
-			if (cpos == -1) return;
-			constraints.splice(cpos, 1);*/
+		public function removeConstraintNode(c:ConstraintNode):Boolean 
+		{
+			return constraints.removeNode(c);
 		}
 	
+		public function removeConstraint(c:WConstraint):Boolean 
+		{
+			return constraints.removeValue(c);
+		}
 	
 		/**
 		 * Returns an array of every item added to the engine. This includes all particles and
@@ -328,29 +329,25 @@ package fr.seraf.wow.core {
 		}
 
 
-		private function integrate():void {
-			var walker:DListNode = particles.head;
+		private function integrate():void 
+		{
+			var walker:ParticleNode = particles.head;
 			while (walker)
 			{
-				 walker.data.update(timeStep);	
+				walker.particle.update(timeStep);	
 				walker = walker.next;
 			}
-			/*for (var i:Number = 0; i < particles.length; i++) {
-				particles[i].update(timeStep);	
-			}*/
 		}
 	
 		
-		private function satisfyConstraints():void {
-			var node:DListNode = constraints.head;
+		private function satisfyConstraints():void 
+		{
+			var node:ConstraintNode = constraints.head;
 			while (node)
 			{
-				 node.data.resolve();	
+				node.constraint.resolve();	
 				node = node.next;
 			}
-			/*for (var n:Number = 0; n < constraints.length; n++) {
-				constraints[n].resolve();
-			}*/
 		}
 	
 	
@@ -363,15 +360,19 @@ package fr.seraf.wow.core {
 		 * a Particle is attached to a SpringConstraint it is never tested against that 
 		 * SpringConstraint for collision
 		 */
-		private function checkCollisions():void {
-			var node:DListNode = particles.head;
-			while (node){
+		private function checkCollisions():void 
+		{
+			var node:ParticleNode = particles.head;
+			while (node)
+			{
 				//Quick note: leaving pa & pb untyped is surprisingly a lot faster than strongly typed.
-				var pa:* = node.data
-				var node2:DListNode =  node.next;
-				while (node2){
-					var pb:* = node2.data
-					if (pa.collidable && pb.collidable) {
+				var pa:* = node.particle;
+				var node2:ParticleNode =  node.next;
+				while (node2)
+				{
+					var pb:* = node2.particle;
+					if (pa.collidable && pb.collidable) 
+					{
 						WCollisionDetector.test(pa, pb);
 					}
 					node2 = node2.next;
