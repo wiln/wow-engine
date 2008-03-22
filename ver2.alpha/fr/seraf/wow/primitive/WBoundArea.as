@@ -104,7 +104,15 @@ _wplane1.activCollisionEvent(func)
 		}
 		
 
-
+		/**
+		 * Returns the primitive rotation vector containing the eulers angles
+		 * @return WVector the vector of euler angles
+		 */
+		public function getRotation():WVector
+		{
+			return rotation;
+		}
+		
 		public function generate():void {
 			var p:WVertex;
 			var wd:Number=_w/2;

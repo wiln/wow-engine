@@ -24,16 +24,14 @@
 
 package fr.seraf.wow.primitive{
 
+	import fr.seraf.wow.core.data.WMatrix4;
 	import fr.seraf.wow.core.data.WPlane;
 	import fr.seraf.wow.core.data.WVector;
 	import fr.seraf.wow.core.data.WVertex;
 	import fr.seraf.wow.core.face.WIPolygon;
 	import fr.seraf.wow.core.face.WPolygon;
-	import fr.seraf.wow.math.WPlaneMath;
 	import fr.seraf.wow.math.WMatrix4Math;
-	import fr.seraf.wow.math.WVectorMath;
-	import fr.seraf.wow.core.data.WMatrix4;
-	import fr.seraf.wow.primitive.WParticle;
+	import fr.seraf.wow.math.WPlaneMath;
 
 
 	/**
@@ -100,6 +98,16 @@ package fr.seraf.wow.primitive{
 			//_n = _f.createNormale ();
 			//_plane=new Plane(_n.x,_n.y,_n.z,0);
 		}
+		
+		/**
+		 * Returns the primitive rotation vector containing the eulers angles
+		 * @return WVector the vector of euler angles
+		 */
+		public function getRotation():WVector
+		{
+			return rotation;
+		}
+		
 		public function setRotation(rx:Number,ry:Number,rz:Number):void {
 			rx = ( rx + 360 ) % 360;
 			ry = ( ry + 360 ) % 360;
