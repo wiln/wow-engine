@@ -47,6 +47,8 @@ package fr.seraf.wow.primitive {
 		/** @private */
 		public var prev:WVector;
 		/** @private */
+		internal var samp:Vector;
+		/** @private */
 		public var isColliding:Boolean;
 		/** @private */
 		public var interval:WInterval;
@@ -64,6 +66,8 @@ package fr.seraf.wow.primitive {
 		private var _collidable:Boolean;
 		private var collision:WCollision;
 		private var _WOWEngine:WOWEngine;
+		
+		private var _multisample:int;
 		
 		private var _storedData:*;
 		public static const MIN_MASS:Number = 0.0001;
@@ -84,6 +88,7 @@ package fr.seraf.wow.primitive {
 			curr = new WVector(x, y,z);
 			prev = new WVector(x, y,z);
 			temp = new WVector(0,0,0);
+			samp = new WVector(0,0,0);
 			fixed = isFixed;
 			
 			forces = new WVector(0,0,0);
@@ -95,7 +100,7 @@ package fr.seraf.wow.primitive {
 			this.friction = friction;
 			
 			collidable = true;
-			
+			_multisample = 0;
 		}
 		
 		public function activCollisionEvent(func:Function):void {
@@ -175,7 +180,22 @@ package fr.seraf.wow.primitive {
 			_kfr = k;
 		}
 		
-
+		/**
+		 * Determines the number of intermediate position steps checked for collision each
+		 * cycle. Setting this number higher on fast moving particles can prevent 'tunneling'
+		 * -- when a particle moves so fast it misses collision with certain surfaces.
+		 */ 
+		public function get multisample():int {
+			return _multisample; 
+		}
+		
+		
+		/**
+		 * @private
+		 */
+		public function set multisample(m:int):void {
+			_multisample = m;
+		}
 				
 		/**
 		 * The surface friction of the particle. Values must be in the range of 0 to 1.
