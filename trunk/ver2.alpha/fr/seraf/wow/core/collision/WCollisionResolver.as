@@ -41,40 +41,45 @@ package fr.seraf.wow.core.collision {
 				pb:WParticle, 
 				normal:WVector, 
 				depth:Number):void {
+				
+			pa.curr.copy(pa.samp);
+     		pb.curr.copy(pb.samp);
+     		
 			var mtd:WVector = WVectorMath.scale(normal,depth);
 			var te:Number = pa.elasticity + pb.elasticity;
-			
+			 var sumInvMass:Number = pa.invMass + pb.invMass;
+			  
 			// the total friction in a collision is combined but clamped to [0,1]
-			var tf:Number = 1 - (pa.friction + pb.friction);
-			if (tf > 1) tf = 1;
-			else if (tf < 0) tf = 0;
+		   // the total friction in a collision is combined but clamped to [0,1]
+            var tf:Number = clamp(1 - (pa.friction + pb.friction), 0, 1);
 		
 			// get the total mass, and assign giant mass to fixed particles
-			var ma:Number = (pa.fixed) ? 100000 : pa.mass;
-			var mb:Number = (pb.fixed) ? 100000 : pb.mass;
-			var tm:Number = ma + mb;
+		
+			
 			
 			// get the collision components, vn and vt
 			var ca:WCollision = pa.getComponents(normal);
 			var cb:WCollision = pb.getComponents(normal);
 		 
 		 	// calculate the coefficient of restitution based on the mass  
-			var vnA:WVector =WVectorMath.divEquals(WVectorMath.addVector(WVectorMath.scale(cb.vn,(te + 1) * mb),WVectorMath.scale(ca.vn,ma - te * mb)),tm);	
-
-			var vnB:WVector =WVectorMath.divEquals(WVectorMath.addVector(WVectorMath.scale(ca.vn,(te + 1) * ma),WVectorMath.scale(cb.vn,mb - te * ma)),tm);	
-
+			var vnA:WVector =WVectorMath.divEquals(WVectorMath.addVector(WVectorMath.scale(cb.vn,(te + 1) * pa.invMass),WVectorMath.scale(ca.vn,pb.invMass - te * pa.invMass)),sumInvMass);	
+			var vnB:WVector =WVectorMath.divEquals(WVectorMath.addVector(WVectorMath.scale(ca.vn,(te + 1) * pb.invMass),WVectorMath.scale(cb.vn,pa.invMass - te * pb.invMass)),sumInvMass);	
+			// apply friction to the tangental component
 			ca.vt=WVectorMath.scale(ca.vt,tf);
-
 			cb.vt=WVectorMath.scale(cb.vt,tf);
 			
 			// scale the mtd by the ratio of the masses. heavier particles move less
-			var mtdA:WVector =WVectorMath.scale(mtd,mb / tm);
+			var mtdA:WVector =WVectorMath.scale(mtd,pa.invMass / sumInvMass);
 
-			var mtdB:WVector =WVectorMath.scale(mtd,-ma / tm);
+			var mtdB:WVector =WVectorMath.scale(mtd,-pb.invMass / sumInvMass);
 			
-			if (! pa.fixed) pa.resolveCollision(mtdA, WVectorMath.addVector(vnA,ca.vt), normal, depth, -1);
-			if (! pb.fixed) pb.resolveCollision(mtdB, WVectorMath.addVector(vnB,cb.vt), normal, depth,  1);
-			//TODO HANDLE COLLISION
+			  // add the tangental component to the normal component for the new velocity 
+            vnA=WVectorMath.addVector(vnA,ca.vt);
+            vnB=WVectorMath.addVector(vnB,cb.vt);
+            
+			if (! pa.fixed) pa.resolveCollision(mtdA, vnA, normal, depth, -1);
+			if (! pb.fixed) pb.resolveCollision(mtdB, vnB, normal, depth,  1);
+			//
 			var e:WOWEvent=new WOWEvent(WOWEvent.ON_COLLISION);
 			e.particuleA=pa;
 			e.particuleB=pb;
@@ -83,6 +88,11 @@ package fr.seraf.wow.core.collision {
 			pa.collisionHandler.dispatchEvent(e);
 			pb.collisionHandler.dispatchEvent(e);
 		}
+		static function clamp(input:Number, min:Number, max:Number):Number {
+        	if (input > max) return max;	
+            if (input < min) return min;
+            return input;
+        } 
 	}
 }
 

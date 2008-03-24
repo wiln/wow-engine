@@ -38,37 +38,107 @@ package fr.seraf.wow.core.collision{
 		 */
 		public static function test(objA:WParticle, objB:WParticle):void {
 
-			if (objA.fixed && objB.fixed) {
-				return;
+			if (objA.fixed && objB.fixed) return;
+			if (objA.multisample == 0 && objB.multisample == 0) {
+				normVsNorm(objA, objB);
+							
+			} else if (objA.multisample > 0 && objB.multisample == 0) {
+				sampVsNorm(objA, objB);
+				
+			} else if (objB.multisample > 0 && objA.multisample == 0) {
+				sampVsNorm(objB, objA);
+
+			} else if (objA.multisample == objB.multisample) {
+				sampVsSamp(objA, objB);
+
+			} else {
+				normVsNorm(objA, objB);
 			}
 
+		}
+				
+		/**
+		 * default test for two non-multisampled particles
+		 */
+		private static function normVsNorm(objA:WParticle, objB:WParticle):void {
+			objA.samp.copy(objA.curr);
+			objB.samp.copy(objB.curr);
+			testTypes(objA, objB);
+		}
+		
+		
+		/**
+		 * Tests two particles where one is multisampled and the other is not. Let objectA
+		 * be the multisampled particle.
+		 */
+		private static function sampVsNorm(objA:WParticle, objB:WParticle):void {
+		
+			var s:Number = 1 / (objA.multisample + 1); 
+			var t:Number = s;
+		
+			objB.samp.copy(objB.curr);
+			
+			for (var i:int = 0; i <= objA.multisample; i++) {
+				objA.samp.setTo(objA.prev.x + t * (objA.curr.x - objA.prev.x), 
+								objA.prev.y + t * (objA.curr.y - objA.prev.y),
+								objA.prev.z + t * (objA.curr.z - objA.prev.z));
+		
+				if (testTypes(objA, objB)) return;
+				t += s;
+			}
+		}
 
+
+		/**
+		 * Tests two particles where both are of equal multisample rate
+		 */		
+		private static function sampVsSamp(objA:WParticle, objB:WParticle):void {
+			
+			var s:Number = 1 / (objA.multisample + 1); 
+			var t:Number = s;
+			
+			for (var i:int = 0; i <= objA.multisample; i++) {
+				
+				objA.samp.setTo(objA.prev.x + t * (objA.curr.x - objA.prev.x), 
+								objA.prev.y + t * (objA.curr.y - objA.prev.y),
+								objA.prev.z + t * (objA.curr.z - objA.prev.z));
+				
+				objB.samp.setTo(objB.prev.x + t * (objB.curr.x - objB.prev.x), 
+								objB.prev.y + t * (objB.curr.y - objB.prev.y),
+								objB.prev.z + t * (objB.curr.z - objB.prev.z));
+				
+				if (testTypes(objA, objB)) return;
+				t += s;
+			}
+		}
+		private static function testTypes(objA:WParticle, objB:WParticle):Boolean {
 			// circle to circle
 			if (objA is WSphere && objB is WSphere) {
-				testSpherevsSphere(WSphere(objA), WSphere(objB));
+					return testSpherevsSphere(WSphere(objA), WSphere(objB));
 
 
 			}
 			// plan to circle
 			if (objA is WOWPlane && objB is WSphere) {
-				testPlanevsSphere(WOWPlane(objA), WSphere(objB));
+					return testPlanevsSphere(WOWPlane(objA), WSphere(objB));
 
 
 			}
 			// plan to circle
 			if (objA is WSphere && objB is WOWPlane) {
-				testPlanevsSphere(WOWPlane(objB), WSphere(objA));
+					return testPlanevsSphere(WOWPlane(objB), WSphere(objA));
 			}
 			// plan to circle
 			if (objA is WOWPolygon && objB is WSphere) {
-				testPolyvsSphere(WOWPolygon(objA), WSphere(objB));
+					return testPolyvsSphere(WOWPolygon(objA), WSphere(objB));
 
 
 			}
 			// plan to circle
 			if (objA is WSphere && objB is WOWPolygon) {
-				testPolyvsSphere(WOWPolygon(objB), WSphere(objA));
+				return testPolyvsSphere(WOWPolygon(objB), WSphere(objA));
 			}
+			return false;
 		}
 		private static function bounds(ra:WOWPolygon,pos:WVector):Boolean
 		{
@@ -84,16 +154,16 @@ package fr.seraf.wow.core.collision{
 			}
 			return false;
 		}
-		private static function testPolyvsSphere(ra:WOWPolygon, ca:WSphere):void {
+		private static function testPolyvsSphere(ra:WOWPolygon, ca:WSphere):Boolean {
 
 			var collisionNormal:WVector;
 			var collisionDepth:Number = Number.POSITIVE_INFINITY;
 
-			var depth:Number=WPlaneMath.distanceToPoint(ra.getPlane(),ca.position);
+			var depth:Number=WPlaneMath.distanceToPoint(ra.getPlane(),ca.samp);
 			//if (depth == 0) {
 			var r:Number = ca.radius;
 			if (depth == r) {
-				return;
+				return false;
 			}
 			//if (Math.abs(depth) < Math.abs(collisionDepth)) {
 			
@@ -104,33 +174,36 @@ package fr.seraf.wow.core.collision{
 			collisionDepth = r - collisionDepth;
 
 			if (collisionDepth > 0) {
-				if (bounds(ra,ca.position)) {
-					return;
+				if (bounds(ra,ca.samp)) {
+					return false;
 				}
 				WVectorMath.divEquals(collisionNormal,mag);
-			} else {
-				return;
-			}
+				WCollisionResolver.resolveParticleParticle(ra, ca, WVectorMath.negate(collisionNormal), collisionDepth);
+				return true;
+			} 
 			
-			WCollisionResolver.resolveParticleParticle(ra, ca, WVectorMath.negate(collisionNormal), collisionDepth);
+			return false;
+			
+			
+			
 			
 		}
-		private static function testPlanevsSphere(ra:WOWPlane, ca:WSphere):void {
+		private static function testPlanevsSphere(ra:WOWPlane, ca:WSphere):Boolean {
 
 			var collisionNormal:WVector;
 			var collisionDepth:Number = Number.POSITIVE_INFINITY;
 
-			var depth:Number=WPlaneMath.distanceToPoint(ra.getPlane(),ca.position);
+			var depth:Number=WPlaneMath.distanceToPoint(ra.getPlane(),ca.samp);
 			if (depth == 0) {
-				return;
+				return false;
 			}
 
-			if (Math.abs(depth) < Math.abs(collisionDepth)) {
+			if (Math.abs(depth) < collisionDepth) {
 				collisionNormal = ra.getNormale();
 				collisionDepth = depth;
 			}
 			//}
-			// determine if the circle's center is in a vertex region
+			// determine if the sphere's center is in a vertex region
 
 			var r:Number = ca.radius;
 
@@ -142,11 +215,13 @@ package fr.seraf.wow.core.collision{
 
 			if (collisionDepth > 0) {
 				WVectorMath.divEquals(collisionNormal,mag);
-			} else {
-				return;
-			}
-			WCollisionResolver.resolveParticleParticle(ra, ca, WVectorMath.negate(collisionNormal), collisionDepth);
-
+				WCollisionResolver.resolveParticleParticle(ra, ca, WVectorMath.negate(collisionNormal), collisionDepth);
+				return true;
+			} 
+			
+			return false;
+			
+			
 		}
 
 		/**
@@ -154,24 +229,21 @@ package fr.seraf.wow.core.collision{
 		 * determines its axis and depth, and then passes it off to the CollisionResolver
 		 * for handling.
 		 */
-		private static function testSpherevsSphere(ca:WSphere, cb:WSphere):void {
+		private static function testSpherevsSphere(ca:WSphere, cb:WSphere):Boolean {
 
 			var depthX:Number = testIntervals(ca.getIntervalX(), cb.getIntervalX());
-			if (depthX == 0) {
-				return;
-			}
+			
+			if (depthX == 0) return false;
 
 			var depthY:Number = testIntervals(ca.getIntervalY(), cb.getIntervalY());
-			if (depthY == 0) {
-				return;
-			}
+			
+			if (depthY == 0) return false;
 
 			var depthZ:Number = testIntervals(ca.getIntervalZ(), cb.getIntervalZ());
-			if (depthZ == 0) {
-				return;
-			}
-
-			var collisionNormal:WVector = WVectorMath.sub(ca.curr,cb.curr);
+			
+			if (depthZ == 0) return false;
+		
+			var collisionNormal:WVector = WVectorMath.sub(ca.samp,cb.samp);
 			var mag:Number = WVectorMath.getNorm(collisionNormal);
 			var collisionDepth:Number = (ca.radius + cb.radius) - mag;
 
@@ -179,19 +251,19 @@ package fr.seraf.wow.core.collision{
 
 				collisionNormal=WVectorMath.divEquals(collisionNormal,mag);
 				WCollisionResolver.resolveParticleParticle(ca, cb, collisionNormal, collisionDepth);
+				return true;
 			}
+			return false;
 		}
 		/**
 		 * Returns 0 if intervals do not overlap. Returns smallest depth if they do.
 		 */
 		private static function testIntervals(intervalA:WInterval, intervalB:WInterval):Number {
 
-			if (intervalA.max < intervalB.min) {
-				return 0;
-			}
-			if (intervalB.max < intervalA.min) {
-				return 0;
-			}
+
+			if (intervalA.max < intervalB.min) return 0;
+
+			if (intervalB.max < intervalA.min) return 0;
 
 			var lenA:Number = intervalB.max - intervalA.min;
 			var lenB:Number = intervalB.min - intervalA.max;

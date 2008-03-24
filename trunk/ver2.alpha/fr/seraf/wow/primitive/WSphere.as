@@ -115,8 +115,8 @@ package fr.seraf.wow.primitive {
 		 * @private
 		 */
 		public function getIntervalX():WInterval {
-			interval.min = curr.x - _radius;
-			interval.max = curr.x + _radius;
+			interval.min = samp.x - _radius;
+			interval.max = samp.x + _radius;
 			return interval;
 		}
 		
@@ -125,16 +125,16 @@ package fr.seraf.wow.primitive {
 		 * @private
 		 */		
 		public function getIntervalY():WInterval {
-			interval.min = curr.y - _radius;
-			interval.max = curr.y + _radius;
+			interval.min = samp.y - _radius;
+			interval.max = samp.y + _radius;
 			return interval;
 		}
 				/**
 		 * @private
 		 */		
 		public function getIntervalZ():WInterval {
-			interval.min = curr.z - _radius;
-			interval.max = curr.z + _radius;
+			interval.min = samp.z - _radius;
+			interval.max = samp.z + _radius;
 			return interval;
 		}
 	}
