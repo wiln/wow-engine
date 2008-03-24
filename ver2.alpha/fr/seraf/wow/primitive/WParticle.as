@@ -47,7 +47,7 @@ package fr.seraf.wow.primitive {
 		/** @private */
 		public var prev:WVector;
 		/** @private */
-		internal var samp:Vector;
+		public var samp:WVector;
 		/** @private */
 		public var isColliding:Boolean;
 		/** @private */
@@ -145,7 +145,8 @@ package fr.seraf.wow.primitive {
 		 * @private
 		 */
 		public function set mass(m:Number):void {
-			_mass = Math.max(m,MIN_MASS);
+			if (m <= 0) throw new ArgumentError("mass may not be set <= 0"); 
+			_mass = m;
 			_invMass = 1 / _mass;
 		}	
 	
@@ -226,6 +227,7 @@ package fr.seraf.wow.primitive {
 		 * @private
 		 */
 		public function set friction(f:Number):void {
+			if (f < 0 || f > 1) throw new ArgumentError("Legal friction must be >= 0 and <=1");
 			_friction = Math.max(Math.min(f,1),0);
 		}
 		
@@ -419,11 +421,11 @@ package fr.seraf.wow.primitive {
 			var nv:WVector =WVectorMath.addVector(velocity,forces);
 			//var nv:Vector = velocity.plus(forces.multEquals(dt2));
 			//nv.multEquals(0.98);
-			nv=WVectorMath.scale(nv,0.98)
+			//nv=WVectorMath.scale(nv,0.98)
 			nv=WVectorMath.scale(nv,engine.damping)
 			curr=WVectorMath.addVector(curr,nv);
 			//curr.plusEquals(nv.multEquals(WOWEngine.damping));
-			prev=WVectorMath.clone(temp);
+			prev.copy(temp);
 			//prev.copy(temp);
 		
 			// clear the forces
@@ -475,7 +477,7 @@ package fr.seraf.wow.primitive {
 		 * @private
 		 */		
 		public function get invMass():Number {
-			return _invMass; 
+				return (fixed) ? 0 : _invMass; 
 		}
 		
 		

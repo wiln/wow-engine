@@ -58,8 +58,30 @@ package fr.seraf.wow.core.data {
 			y = py;
 			z = pz;
 		}
-		
-		
+		/**
+		* <p>Copy a new {@code Vector} Instance</p>
+		* 
+		* @param	px	the x coordinate
+		* @param	py	the y coordinate
+		* @param	pz	the z coordinate
+		*/ 	
+		public function copy(v:WVector):void {
+			x = v.x;
+			y = v.y;
+			z = v.z;
+		}
+				/**
+		* <p>Set the value of {@code Vector} Instance</p>
+		* 
+		* @param	px	the x coordinate
+		* @param	py	the y coordinate
+		* @param	pz	the z coordinate
+		*/ 	
+		public function setTo(px:Number, py:Number, pz:Number):void {
+			x = px;
+			y = py;
+			z = pz;
+		}
 		/**
 		* Get a String represntation of the {@code Vector}.
 		* 
