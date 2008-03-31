@@ -1,4 +1,4 @@
-﻿package shirotokoro
+﻿package shirotokoro.interfaces
 {
 
 	include Matrix3;
