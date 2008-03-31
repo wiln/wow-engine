@@ -66,13 +66,10 @@
 		public function get angularDamping() :Number;
 		
 		public function set position(__position:Vector3):void;
-		//public function set position(x:Number,y:Number, z:Number):void;
 		public function get position() :Vector3;   
 
 		public function set orientation(__orientation:Quaternion):void;  
-		//public function set orientation(r:Number,  i:Number, j:Number, k:Number):void;
-		public function get orientation() :Quaternion;  
-		//public function get orientation():Matrix3;    
+		public function get orientation() :Quaternion;    
 
 		public function get transform() :Matrix4;
 
@@ -86,12 +83,10 @@
 		public function getDirectionInWorldSpace(__direction:Vector3) :Vector3;
 		
 		public function set velocity(__velocity:Vector3):void; 
-		//public function set velocity(x:Number, y:Number,  z:Number):void; 
 		public function get velocity() :Vector3;  
 		public function addVelocity(__deltaVelocity:Vector3):void;
 			
 	  	public function set rotation(__rotation:Vector3):void;
-		//public function set rotation(x:Number,y:Number, z:Number):void;
 		public function get rotation() :Vector3;
 		public function addRotation(__deltaRotation:Vector3):void;
 		   
@@ -112,7 +107,6 @@
 		public function addTorque(__torque:Vector3):void;
 			  
 		public function set acceleration(__acceleration:Vector3):void;
-		//public function set acceleration(x:Number, y:Number, z:Number):void; 
 		public function get acceleration() :Vector3; 
 			
 	}
