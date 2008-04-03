@@ -49,7 +49,7 @@ package {
 		public var rbEdge:Array;
 		public var rbTriangles:Array;
 
-		public function RigidBody (m:Number,r:Number,cf:Number,s:WOWVector3) {	
+		public function RigidBody (m:Number,cr:Number,cf:Number,s:WOWVector3) {	
 			groundCollisionState=false;
 			rigidBodyCollisionState=false;
 			part=false;
