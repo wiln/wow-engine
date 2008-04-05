@@ -1,8 +1,8 @@
 package {
 	import WOWMatrixFunc;
-	import WOWVector3Func;
+	import WOWVectorFunc;
 	import WOWMatrix;
-	import WOWVector3;
+	import WOWVector;
 	import WOWQuaternion;
 	import Edge;
 	import triangle;
@@ -23,20 +23,20 @@ package {
 		public var inertia:WOWMATRIX;
 		public var InvInertia:WOWMATRIX;
 		public var Orientation:WOWMATRIX;
-		public var size:WOWVector3;
-		public var cgPosition:WOWVector3;
-		public var angles:WOWVector3;
-		public var forces:WOWVector3;
-		public var torques:WOWVector3;
-		public var linImpulse:WOWVector3;
-		public var rotImpulse:WOWVector3;
+		public var size:WOWVector;
+		public var cgPosition:WOWVector;
+		public var angles:WOWVector;
+		public var forces:WOWVector;
+		public var torques:WOWVector;
+		public var linImpulse:WOWVector;
+		public var rotImpulse:WOWVector;
 		
-		public var linVelocity:WOWVector3;
-		public var rotVelocity:WOWVector3;
-		public var linAcceleration:WOWVector3;
-		public var rotAcceleration:WOWVector3;
+		public var linVelocity:WOWVector;
+		public var rotVelocity:WOWVector;
+		public var linAcceleration:WOWVector;
+		public var rotAcceleration:WOWVector;
 		
-		public var axis:WOWVector3;
+		public var axis:WOWVector;
 		public var angle:Number;
 		
 		
@@ -50,7 +50,7 @@ package {
 		public var rbEdge:Array;
 		public var rbTriangles:Array;
 
-		public function RigidBody (m:Number,cr:Number,cf:Number,s:WOWVector3) {	
+		public function RigidBody (m:Number,cr:Number,cf:Number,s:WOWVector) {	
 			groundCollisionState=false;
 			rigidBodyCollisionState=false;
 			part=false;
@@ -58,14 +58,14 @@ package {
 			coeffOfRestitution=cr;
 			coeffOfFriction=cf;
 			
-			cgPosition=new WOWVector3(0,0,0);
-			angles=new WOWVector3(0,0,0);
+			cgPosition=new WOWVector(0,0,0);
+			angles=new WOWVector(0,0,0);
 			size=s
 			collisionRadii=Math.sqrt(Math.pow(size.x/2,2)+Math.pow(size.y/2,2)+Math.pow(size.z/2,2));
 			localAxis=new Array(3)
-			localAxis[0]=new WOWVector3(1,0,0);
-			localAxis[1]=new WOWVector3(0,1,0);
-			localAxis[2]=new WOWVector3(0,0,1);
+			localAxis[0]=new WOWVector(1,0,0);
+			localAxis[1]=new WOWVector(0,1,0);
+			localAxis[2]=new WOWVector(0,0,1);
 		
 			inertia=WOWMATRIX(0,0,0,0,
 							   0,0,0,0,
@@ -77,54 +77,54 @@ package {
 								  0,0,0,0,
 								  0,0,0,0);
 		
-			axis=new WOWVector3(0,0,0);
+			axis=new WOWVector(0,0,0);
 			angle=0;
 			rotation=WOWQuaternion(axis.x,axis.y,axis.z,angle);
 			WOWMatrixFunc.RotationY(Orientation,0);
 		
-			forces			= new WOWVector3(0, 0, 0);
-			torques			= new WOWVector3(0, 0, 0);
-			linImpulse      = new WOWVector3(0, 0, 0);
-			rotImpulse      = new WOWVector3(0, 0, 0);
-			linVelocity  	= new WOWVector3(0, 0, 0);
-			rotVelocity		= new WOWVector3(0, 0, 0);
-			linAcceleration	= new WOWVector3(0, 0, 0);
-			rotAcceleration	= new WOWVector3(0, 0, 0);
+			forces			= new WOWVector(0, 0, 0);
+			torques			= new WOWVector(0, 0, 0);
+			linImpulse      = new WOWVector(0, 0, 0);
+			rotImpulse      = new WOWVector(0, 0, 0);
+			linVelocity  	= new WOWVector(0, 0, 0);
+			rotVelocity		= new WOWVector(0, 0, 0);
+			linAcceleration	= new WOWVector(0, 0, 0);
+			rotAcceleration	= new WOWVector(0, 0, 0);
 		}
 		public function resetForce():void
 		{
-			forces			= new WOWVector3(0, 0, 0);
-			torques			= new WOWVector3(0, 0, 0);
-			linAcceleration	= new WOWVector3(0, 0, 0);
-			rotAcceleration	= new WOWVector3(0, 0, 0);
+			forces			= new WOWVector(0, 0, 0);
+			torques			= new WOWVector(0, 0, 0);
+			linAcceleration	= new WOWVector(0, 0, 0);
+			rotAcceleration	= new WOWVector(0, 0, 0);
 		}
-		public function AddTorque(t:WOWVector3):void{
-			torques=WOWVector3Func.plus(torques,t);
+		public function AddTorque(t:WOWVector):void{
+			torques=WOWVectorFunc.plus(torques,t);
 			//	D3DXVec3TransformNormal(&rotAcceleration,&torques,&InvInertia);
-			rotAcceleration=WOWVector3Func.transformNormal(torques,InvInertia);
+			rotAcceleration=WOWVectorFunc.transformNormal(torques,InvInertia);
 
 		};
-		public function AddForce(p:WOWVector3, f:WOWVector3):void{
+		public function AddForce(p:WOWVector, f:WOWVector):void{
 		
-			forces=WOWVector3Func.plus(forces,f);
+			forces=WOWVectorFunc.plus(forces,f);
 		
-			linAcceleration=WOWVector3Func.div(forces,mass);
-			var t:WOWVector3=WOWVector3Func.cross(p-cgPosition,f)
+			linAcceleration=WOWVectorFunc.div(forces,mass);
+			var t:WOWVector=WOWVectorFunc.cross(p-cgPosition,f)
 			//D3DXVec3Cross(&t,&(*p-cgPosition),f);
 			AddTorque(t);
 		};
-		public function AddImpulse(pr:WOWVector3, j:WOWVector3):void{
+		public function AddImpulse(pr:WOWVector, j:WOWVector):void{
 
-			linImpulse=WOWVector3Func.plus(linImpulse,j);
-			var temp:WOWVector3=WOWVector3Func.cross(pr,j);
-			rotImpulse=WOWVector3Func.plus(rotImpulse,temp);
+			linImpulse=WOWVectorFunc.plus(linImpulse,j);
+			var temp:WOWVector=WOWVectorFunc.cross(pr,j);
+			rotImpulse=WOWVectorFunc.plus(rotImpulse,temp);
 			
 		};
 		public function applyImpulse():void{};
 		public function resetForce():void{};
-		public function setPos(pos:WOWVector3):void{};
-		public function setAng(ang:WOWVector3):void{};
-		public function rotateRB(ax:WOWVector3, ang:Number):void{};
+		public function setPos(pos:WOWVector):void{};
+		public function setAng(ang:WOWVector):void{};
+		public function rotateRB(ax:WOWVector, ang:Number):void{};
 		public function Update():void{};
 		
 		public function updateVertices():void{};
@@ -134,7 +134,7 @@ package {
 		public function checkRBCollision(rb:RigidBody):void{};
 		
 		public function groundCollisionResponse():void{};
-		protected function computeOrientation(a:WOWVector3,d:Number):void{};
-		protected function rotateVector(v:WOWVector3):void{}
+		protected function computeOrientation(a:WOWVector,d:Number):void{};
+		protected function rotateVector(v:WOWVector):void{}
 	}
 }
