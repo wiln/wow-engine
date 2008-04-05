@@ -1,12 +1,12 @@
 package {
 
 	import RigidBody;
-	import WOWVector3;
+	import WOWVector;
 	
 	public class Cube extends RigidBody{
 	
 		private var verticesPos:Array()
-		public function Cube (m:Number,cr:Number,cf:Number,v:Boolean,s:WOWVector3) {
+		public function Cube (m:Number,cr:Number,cf:Number,v:Boolean,s:WOWVector) {
 			super(m,cr,cf,s);
 			visible=v;
 		}

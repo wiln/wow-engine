@@ -1,7 +1,7 @@
 package {
 
 	import WOWMatrixFunc;
-	import WOWVector3Func;
+	import WOWVectorFunc;
 	import WOWMatrix;
 	import WOWVector3;
 	public class WOWVector3Func {
@@ -16,8 +16,8 @@ package {
 		Transforms the 3D vector normal by the given matrix.
 		
 		*/
-		public function transformNormal(pV:WOWVector3,pM:WOWMatrix):WOWVector3{
-			var pOut=new WOWVector3();
+		public function transformNormal(pV:WOWVector,pM:WOWMatrix):WOWVector{
+			var pOut=new WOWVector();
 			return pOut;
 		}
 		/*
@@ -25,12 +25,12 @@ package {
 		//Determines the cross-product of two 3-D vectors.
 		//see  http://msdn2.microsoft.com/en-us/library/bb205507(VS.85).aspx
 		*/
-		public function cross(pV1:WOWVector3,pV2:WOWVector3):WOWVector3{
-			var pOut=new WOWVector3();
+		public function cross(pV1:WOWVector,pV2:WOWVector):WOWVector{
+			var pOut=new WOWVector();
 			return pOut;
 		}
 		
-		public function div(pV1:WOWVector3,pV2:WOWVector3):WOWVector3{
+		public function div(pV1:WOWVector,pV2:WOWVector):WOWVector{
 		}
 		
 	}
