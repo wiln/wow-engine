@@ -1,5 +1,6 @@
 package {
 	import WOWMatrixFunc;
+	import WOWVector3Func;
 	import WOWMatrix;
 	import WOWVector3;
 	import WOWQuaternion;
@@ -97,9 +98,28 @@ package {
 			linAcceleration	= new WOWVector3(0, 0, 0);
 			rotAcceleration	= new WOWVector3(0, 0, 0);
 		}
-		public function AddTorque(t:WOWVector3):void{};
-		public function AddForce(p:WOWVector3, f:WOWVector3):void{};
-		public function AddImpulse(pr:WOWVector3, j:WOWVector3):void{};
+		public function AddTorque(t:WOWVector3):void{
+			torques=WOWVector3Func.plus(torques,t);
+			//	D3DXVec3TransformNormal(&rotAcceleration,&torques,&InvInertia);
+			rotAcceleration=WOWVector3Func.transformNormal(torques,InvInertia);
+
+		};
+		public function AddForce(p:WOWVector3, f:WOWVector3):void{
+		
+			forces=WOWVector3Func.plus(forces,f);
+		
+			linAcceleration=WOWVector3Func.div(forces,mass);
+			var t:WOWVector3=WOWVector3Func.cross(p-cgPosition,f)
+			//D3DXVec3Cross(&t,&(*p-cgPosition),f);
+			AddTorque(t);
+		};
+		public function AddImpulse(pr:WOWVector3, j:WOWVector3):void{
+
+			linImpulse=WOWVector3Func.plus(linImpulse,j);
+			var temp:WOWVector3=WOWVector3Func.cross(pr,j);
+			rotImpulse=WOWVector3Func.plus(rotImpulse,temp);
+			
+		};
 		public function applyImpulse():void{};
 		public function resetForce():void{};
 		public function setPos(pos:WOWVector3):void{};
