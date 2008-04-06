@@ -200,42 +200,93 @@ package {
 			}
 		
 			//dt c'est une variable global il me semble >_>
-			var ds:WOWVector=linVelocity * dt + linAcceleration * (dt*dt*0.5);
-			cgPosition += ds;
-			for(int i=0;i<verticesNum;i++)
+			var ds:WOWVector=WOWVectorFunc.plus(WOWVectorFunc.mult(linVelocity, dt) , WOWVectorFunc.mult(linAcceleration,(dt*dt*0.5)));
+			WOWVectorFunc.plusEqual(cgPosition, ds);
+			for(var i:int=0;i<verticesNum;i++)
 			{
-				vertices[i]+=ds;
+				WOWVectorFunc.plusEqual(vertices[i],ds);
 			}
 		
-			linVelocity+=linAcceleration*dt;
+			WOWVectorFunc.plusEqual(linVelocity,WOWVectorFunc.mult(linAcceleration,dt);
 		
-			//计算旋转轴
-			if(D3DXVec3Length(&rotVelocity)>0.0f)
+		
+			if(WOWVectorFunc.Length(rotVelocity)>0)
 			{
-				D3DXVec3Normalize(&axis,&rotVelocity);
+				WOWVectorFunc.Normalize(axis,rotVelocity);
 			}
 			else
 			{
-				axis=D3DXVECTOR3(0,1,0);
+				axis=new WOWVector(0,1,0);
 			}
 		
-			//机算旋转
-			angle=D3DXVec3Length(&(rotVelocity * dt + rotAcceleration * (dt*dt*0.5f)));
+			
+			angle=WOWVectorFunc.Length((WOWVectorFunc.plus(WOWVectorFunc.mult(rotVelocity , dt) , WOWVectorFunc.mult(rotAcceleration , (dt*dt*0.5)))));
 			rotateRB(axis,angle);
 		
-			rotVelocity+=rotAcceleration*dt;
+			WOWVectorFunc.plusEqual(rotVelocity,WOWVectorFunc.mult(rotAcceleration,dt));
 		
-			linVelocity*=0.995;
-			rotVelocity*=0.995;
+			WOWVectorFunc.multEqual(linVelocity,0.995);
+			WOWVectorFunc.multEqual(rotVelocity,0.995);
+		};
+		public function groundCollisionResponse():void{
+		
+			var ImpulseNumerator:Number;
+			var ImpulseDenominator:Number;
+			var temp:WOWVector;
+			var impulse:WOWVector;
+		
+			for(var i:int=0;i<groundCollisionInfo.size();i++)
+			{
+				AddForce(cgPosition,(-(WOWVectorFunc.mult(WOWVectorFunc.Dot(groundCollisionInfo[i].collisionNormal,forces),groundCollisionInfo[i].collisionNormal))));
+		
+				temp=WOWVectorFunc.cross(groundCollisionInfo[i].collisionPointR,groundCollisionInfo[i].collisionNormal);
+				temp=WOWVectorFunc.ransformNormal(temp,InvInertia);
+				temp=WOWVectorFunc.cross(temp,groundCollisionInfo[i].collisionPointR);
+				ImpulseDenominator=(1/mass) + WOWVectorFunc.Dot(temp,groundCollisionInfo[i].collisionNormal);
+		
+				if(i==0 || (i>0 && groundCollisionInfo[i].collisionNormal!=groundCollisionInfo[i-1].collisionNormal))
+				{
+				
+					ImpulseNumerator=-(1 + coeffOfRestitution) * WOWVectorFunc.Dot(groundCollisionInfo[i].collisionVelocity,groundCollisionInfo[i].collisionNormal);
+					impulse=WOWVectorFunc.mult(groundCollisionInfo[i].collisionNormal,(ImpulseNumerator/ImpulseDenominator) );
+		
+				
+					ImpulseNumerator=-coeffOfFriction*WOWVectorFunc.Dot(groundCollisionInfo[i].collisionVelocity,groundCollisionInfo[i].collisionTangent);
+					WOWVectorFunc.plusEqual(impulse,ImpulseNumerator*groundCollisionInfo[i].collisionTangent);
+				}
+				else
+				{
+					impulse=new WOWVector(0,0,0);
+				}
+				
+				AddImpulse(groundCollisionInfo[i].collisionPointR, impulse);
+			}
 		};
 		
-		public function updateVertices():void{};
+		public function updateVertices():void{
+			var v:Array=new Array()
+			//vb bitmap de test
+			vb.lock();
+			for(var i:int=0;i<verticesNum;i++)
+			{
+				v[i]=new CUSTOMVERTEX(vertices[i].x,vertices[i].y,vertices[i].z,0xffff0000);
+			}
+			vb.unlock();
+			var pVertex2:Array=new Array(6)
+				pVertex2[0]=CUSTOMVERTEX(cgPosition.x,cgPosition.y,cgPosition.z,0xffff0000);
+				pVertex2[1]=new CUSTOMVERTEX(cgPosition.x+50*localAxis[0].x,cgPosition.y+50*localAxis[0].y,cgPosition.z+50*localAxis[0].z,0xffff0000);
+				pVertex2[2]=new CUSTOMVERTEX(cgPosition.x,cgPosition.y,cgPosition.z,0xffff0000);
+				pVertex2[3]=new CUSTOMVERTEX(cgPosition.x+50*localAxis[1].x,cgPosition.y+50*localAxis[1].y,cgPosition.z+50*localAxis[1].z,0xffff0000);
+				pVertex2[4]=new CUSTOMVERTEX(cgPosition.x,cgPosition.y,cgPosition.z,0xffff0000);
+				pVertex2[5]=new CUSTOMVERTEX(cgPosition.x+50*localAxis[2].x,cgPosition.y+50*localAxis[2].y,cgPosition.z+50*localAxis[2].z,0xffff0000);
+			
+				};
 			
 		
 		public function checkParticleCollision(pt:Particle):void{};
 		public function checkRBCollision(rb:RigidBody):void{};
 		
-		public function groundCollisionResponse():void{};
+	
 		
 	}
 }
