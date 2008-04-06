@@ -1,14 +1,14 @@
 package {
 
-	import WOWVector3;
+	import WOWVector;
 
 	public class Triangle {
 		
-		public var point1:WOWVector3;
-		public var point2:WOWVector3;
-		public var point2:WOWVector3;
+		public var point1:WOWVector;
+		public var point2:WOWVector;
+		public var point2:WOWVector;
 		
-		public function Triangle (p1:WOWVector3,p2:WOWVector3,p3:WOWVector3) {
+		public function Triangle (p1:WOWVector,p2:WOWVector,p3:WOWVector) {
 		
 			point1=p1;
 			point2=p2;

@@ -1,22 +1,22 @@
 package {
 
-	import WOWVector3;
+	import WOWVector;
 
 	public class RigidBodyCollisionInfo {
 	
 		public var collisionDepth:Number;
-		public var collisionPoint:WOWVector3;
-		public var collisionPointR:WOWVector3;
-		public var collisionNormal:WOWVector3;
-		public var collisionVelocity:WOWVector3;
-		public var collisionTangent:WOWVector3;
+		public var collisionPoint:WOWVector;
+		public var collisionPointR:WOWVector;
+		public var collisionNormal:WOWVector;
+		public var collisionVelocity:WOWVector;
+		public var collisionTangent:WOWVector;
 		
 		public function RigidBodyCollisionInfo (cd:Number,
-												cp:WOWVector3,
-												cpr:WOWVector3,
-												cn:WOWVector3,
-												cv:WOWVector3,
-												ct:WOWVector3) {
+												cp:WOWVector,
+												cpr:WOWVector,
+												cn:WOWVector,
+												cv:WOWVector,
+												ct:WOWVector) {
 		
 			collisionDepth=cd;
 			collisionPoint=cp;
