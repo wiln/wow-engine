@@ -5,8 +5,6 @@
  * Based on APE by Alec Cove , http://www.cove.org/ape/
  *       & Sandy3D by Thomas Pfeiffer, http://www.flashsandy.org/
  *
- * issue 1 http://code.google.com/p/wow-engine/issues/detail?id=1
- *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
  * arising from the use of this software.
@@ -31,7 +29,7 @@ package fr.seraf.wow.constraint {
 	/**
 	 * A Rigid constraint that connects two particles 
 	 */
-	public class WRigidConstraint extends WConstraint{
+	public class WRigidConstraint extends WBaseConstraint{
 		
 		private var p1:WParticle;
 		private var p2:WParticle;
@@ -52,7 +50,7 @@ package fr.seraf.wow.constraint {
 				p1:WParticle, 
 				p2:WParticle) {
 			
-			super(0.8);
+			super(1);
 			this.p1 = p1;
 			this.p2 = p2;
 			//massAffect=true;
@@ -167,7 +165,7 @@ package fr.seraf.wow.constraint {
 				if (p1.fixed && p2.fixed) return;
 				delta = WVectorMath.sub(p1.curr,p2.curr);
 				var d:Number=WVectorMath.distance(p1.curr,p2.curr)
-				var diff:Number=restLength/d
+				var diff:Number=restLen/d
 				
 				if (! p1.fixed && ! p2.fixed) {
 					var d2:WVector = WVectorMath.scale(WVectorMath.scale(delta,-diff),.5)
@@ -176,11 +174,11 @@ package fr.seraf.wow.constraint {
 					p2.curr=WVectorMath.addVector(c,d2);
 					return
 				}
-				if (p1.fixed) {
+				if ( p1.fixed) {
 					p2.curr=WVectorMath.sub(p1.curr,WVectorMath.scale(delta,diff));
 					return;
 				}
-				if (p2.fixed) {
+				if ( p2.fixed) {
 					p1.curr=WVectorMath.addVector(p2.curr,WVectorMath.scale(delta,diff));
 				}
 				

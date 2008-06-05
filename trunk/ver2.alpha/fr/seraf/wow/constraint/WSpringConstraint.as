@@ -29,7 +29,7 @@ package fr.seraf.wow.constraint {
 	/**
 	 * A Spring-like constraint that connects two particles
 	 */
-	public class WSpringConstraint extends WConstraint {
+	public class WSpringConstraint extends WBaseConstraint {
 		
 		private var p1:WParticle;
 		private var p2:WParticle;
