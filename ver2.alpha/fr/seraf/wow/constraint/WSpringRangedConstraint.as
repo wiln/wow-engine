@@ -34,7 +34,7 @@ package fr.seraf.wow.constraint {
 	/**
 	 * A Spring-like constraint that connects two particles
 	 */
-	public class WSpringRangedConstraint extends WConstraint {
+	public class WSpringRangedConstraint extends WBaseConstraint {
 		
 		private var p1:WParticle;
 		private var p2:WParticle;
@@ -65,7 +65,7 @@ package fr.seraf.wow.constraint {
 			super(stiffness);
 			this.p1 = p1;
 			this.p2 = p2;
-			massAffect=true;
+			this.massAffect=true;
 			this.minDist = minDist;
 			this.maxDist = maxDist
 			
@@ -166,7 +166,7 @@ package fr.seraf.wow.constraint {
 		 * SpringConstraint will always try to keep the particles this distance apart.
 		 */			
 		public function get massAffected():Boolean {
-			return massAffect;
+			return this.massAffect;
 		}
 		
 		
@@ -174,7 +174,7 @@ package fr.seraf.wow.constraint {
 		 * @private
 		 */	
 		public function set massAffected(r:Boolean):void {
-			massAffect = r;
+			this.massAffect = r;
 		}
 	
 
@@ -223,6 +223,9 @@ package fr.seraf.wow.constraint {
 			
 			//var d1: Number = Math.sqrt( dx * dx + dy * dy );
 			deltaLength =  WVectorMath.distance(p1.curr,p2.curr);
+			//trace("deltaLength",deltaLength)
+			//trace("maxDist",maxDist)
+			//trace("minDist",minDist)
 			if((deltaLength > maxDist) && (deltaLength < minDist)){
 				if(Math.abs(deltaLength - maxDist) > Math.abs(minDist - deltaLength)){
 				restLen = maxDist
@@ -236,9 +239,6 @@ package fr.seraf.wow.constraint {
 			} else {
 				return
 			}
-			trace("deltaLength",deltaLength)
-			trace("maxDist",maxDist)
-			trace("minDist",minDist)
 			//var d2: Number = stiffness * ( d1 - restLength ) / d1;
 			var diff:Number = stiffness * ( deltaLength - restLen ) / deltaLength;
 			//dx *= d2;
@@ -248,11 +248,11 @@ package fr.seraf.wow.constraint {
 			var invM2:Number = p2.invMass;
 			var sumInvMass:Number = invM1 + invM2;
 			if (! p1.fixed) {
-				if(massAffected)dmd=WVectorMath.scale(dmd,invM1 / sumInvMass);
+				if(this.massAffect)dmd=WVectorMath.scale(dmd,invM1 / sumInvMass);
 				p1.curr=WVectorMath.sub(p1.curr,dmd);
 			}
 			if (! p2.fixed) {
-				if(massAffected)dmd=WVectorMath.scale(dmd,invM2 / sumInvMass)
+				if(this.massAffect)dmd=WVectorMath.scale(dmd,invM2 / sumInvMass)
 				p2.curr=WVectorMath.addVector(p2.curr,dmd);
 			}
 			/*p0.vx += dx;
@@ -266,6 +266,9 @@ package fr.seraf.wow.constraint {
 		 * if the two particles are at the same location warn the user
 		 */
 		private function checkParticlesLocation():void {
+			if(minDist > maxDist){
+				throw new Error("Min cannot be less than the max. Perhaps you should make 2 constraints.");
+			}
 			if (p1.curr.x == p2.curr.x && p1.curr.y == p2.curr.y&& p1.curr.z == p2.curr.z) {
 				throw new Error("The two particles specified for a SpringContraint can't be at the same location");
 			}

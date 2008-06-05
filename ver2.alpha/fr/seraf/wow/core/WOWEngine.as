@@ -25,7 +25,7 @@ package fr.seraf.wow.core {
 
 	import flash.utils.getQualifiedClassName;
 	
-	import fr.seraf.wow.constraint.WConstraint;
+	import fr.seraf.wow.constraint.WBaseConstraint;
 	import fr.seraf.wow.core.collision.WCollisionDetector;
 	import fr.seraf.wow.core.data.WVector;
 	import fr.seraf.wow.math.WVectorMath;
@@ -213,7 +213,7 @@ package fr.seraf.wow.core {
 		 * 
 		 * @param c The constraint to be added.
 		 */
-		public function addConstraint(c:WConstraint):ConstraintNode 
+		public function addConstraint(c:WBaseConstraint):ConstraintNode 
 		{
 			return constraints.add(c);
 		}
@@ -243,7 +243,7 @@ package fr.seraf.wow.core {
 			return constraints.removeNode(c);
 		}
 	
-		public function removeConstraint(c:WConstraint):Boolean 
+		public function removeConstraint(c:WBaseConstraint):Boolean 
 		{
 			return constraints.removeValue(c);
 		}

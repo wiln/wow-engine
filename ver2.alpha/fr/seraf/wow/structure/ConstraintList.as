@@ -1,4 +1,4 @@
-/**
+﻿/**
  * WOW-Engine AS3 3D Physics Engine, http://www.wow-engine.com
  * Copyright (c) 2007-2008 Seraf ( Jerome Birembaut ) http://seraf.mediabox.fr
  * 
@@ -24,7 +24,7 @@
 
 package fr.seraf.wow.structure
 {
-	import fr.seraf.wow.constraint.WConstraint;
+	import fr.seraf.wow.constraint.WBaseConstraint;
 	
 	/**
 	* ConstraintList class
@@ -42,7 +42,7 @@ package fr.seraf.wow.structure
 			head = null;
 		}
 		
-		public function add( p_oElt:WConstraint ):ConstraintNode
+		public function add( p_oElt:WBaseConstraint ):ConstraintNode
 		{
         	head = new ConstraintNode( p_oElt, head );
         	return head;
@@ -91,7 +91,7 @@ package fr.seraf.wow.structure
     		return false;
     	}
     	
-    	public function removeValue( p_oElt:WConstraint ):Boolean
+    	public function removeValue( p_oElt:WBaseConstraint ):Boolean
     	{
     		if( p_oElt == head.constraint )
     		{
@@ -104,7 +104,7 @@ package fr.seraf.wow.structure
     			var l_oNode:ConstraintNode = head;
 				while( l_oNode != null ) 
 				{
-				    var l_oElt:WConstraint = l_oNode.constraint;
+				    var l_oElt:WBaseConstraint = l_oNode.constraint;
 				    // --
 				    if( l_oElt == p_oElt )
 				    {

@@ -33,7 +33,7 @@ package fr.seraf.wow.constraint{
 	/**
 	 * A Rigid constraint that connects two particles 
 	 */
-	public class WRigidRangedConstraint extends WConstraint {
+	public class WRigidRangedConstraint extends WBaseConstraint {
 
 		private var p1:WParticle;
 		private var p2:WParticle;
@@ -169,7 +169,7 @@ package fr.seraf.wow.constraint{
 			}
 			delta = WVectorMath.sub(p1.curr,p2.curr);
 			var d:Number=WVectorMath.distance(p1.curr,p2.curr);
-			trace(d,maxDist,minDist);
+			//trace(d,maxDist,minDist);
 			if (d>maxDist && d<minDist) {
 				if ((d-maxDist)>(minDist-d)) {
 					restLen = minDist;
@@ -203,6 +203,9 @@ package fr.seraf.wow.constraint{
 		 * if the two particles are at the same location warn the user
 		 */
 		private function checkParticlesLocation():void {
+			if (minDist > maxDist) {
+				throw new Error("Min cannot be less than the max. Perhaps you should make 2 constraints.");
+			}
 			if (p1.curr.x == p2.curr.x && p1.curr.y == p2.curr.y&& p1.curr.z == p2.curr.z) {
 				throw new Error("The two particles specified for a SpringContraint can't be at the same location");
 			}

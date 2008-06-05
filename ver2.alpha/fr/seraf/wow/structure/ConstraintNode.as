@@ -1,4 +1,4 @@
-/**
+﻿/**
  * WOW-Engine AS3 3D Physics Engine, http://www.wow-engine.com
  * Copyright (c) 2007-2008 Seraf ( Jerome Birembaut ) http://seraf.mediabox.fr
  * 
@@ -24,7 +24,7 @@
 
 package fr.seraf.wow.structure
 {
-	import fr.seraf.wow.constraint.WConstraint;
+	import fr.seraf.wow.constraint.WBaseConstraint;
 	import fr.seraf.wow.primitive.WParticle;
 	
 	/**
@@ -36,11 +36,11 @@ package fr.seraf.wow.structure
 	**/
 	public final class ConstraintNode
 	{
-		public var constraint:WConstraint;
+		public var constraint:WBaseConstraint;
 		public var next:ConstraintNode = null;
 		//public var previous:ParticuleNode = null;
 	
-		public function ConstraintNode( p_oValue:WConstraint, p_oNext:ConstraintNode )
+		public function ConstraintNode( p_oValue:WBaseConstraint, p_oNext:ConstraintNode )
 		{
 			constraint = p_oValue;
 			next = p_oNext;
